@@ -1,0 +1,114 @@
+[
+  {
+    "uuid": "prod-001",
+    "title": "Crema blanqueadora",
+    "price": 110,
+    "imageUrl": "../Images/Crema_Blanqueadora.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-002",
+    "title": "Crema facial",
+    "price": 480,
+    "imageUrl": "../Images/Crema_Facial.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-003",
+    "title": "Crema facial de Neem",
+    "price": 140,
+    "imageUrl": "../Images/Crema_Facial_Neem.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-004",
+    "title": "Acondicionador",
+    "price": 95,
+    "imageUrl": "../Images/Acondicionador.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-005",
+    "title": "Gel para el cabello",
+    "price": 90,
+    "imageUrl": "../Images/Gel_Cabello.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-006",
+    "title": "Gel para la circulación",
+    "price": 110,
+    "imageUrl": "../Images/Gel_Circulacion.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-007",
+    "title": "Gel para el dolor",
+    "price": 125,
+    "imageUrl": "../Images/Gel_Dolor.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-008",
+    "title": "Gel reductor",
+    "price": 120,
+    "imageUrl": "../Images/Gel_Reductor.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-009",
+    "title": "Shampoo",
+    "price": 150,
+    "imageUrl": "../Images/Shampoo.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-010",
+    "title": "Shampoo sólido de miel de abeja",
+    "price": 140,
+    "imageUrl": "../Images/Shampoo_Miel_De_Abeja.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-011",
+    "title": "Shampoo sólido de nopal",
+    "price": 130,
+    "imageUrl": "../Images/Shampoo_Nopal.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-012",
+    "title": "Jarabe para la tos",
+    "price": 110,
+    "imageUrl": "../Images/Jarabe_para_la_tos.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-013",
+    "title": "Pasta dental",
+    "price": 120,
+    "imageUrl": "../Images/Pasta_Dental.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-014",
+    "title": "Bálsamo para barba",
+    "price": 180,
+    "imageUrl": "../Images/Balsamo.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-015",
+    "title": "Bálsamo labial",
+    "price": 80,
+    "imageUrl": "../Images/Balsamo_labial.jpg",
+    "description": ""
+  },
+  {
+    "uuid": "prod-016",
+    "title": "Desodorante",
+    "price": 85,
+    "imageUrl": "../Images/Desodorante.jpg",
+    "description": ""
+  }
+]

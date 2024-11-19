@@ -1,0 +1,145 @@
+#### 1. Mostrar el arreglo de productos vacío
+GET http://localhost:3000/products
+
+###
+GET http://localhost:3000/products/total
+###
+
+###
+GET http://localhost:3000/products/geles
+
+#### 2. Intentar crear un producto sin autenticación (debería fallar)
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+
+{
+    "title": "Producto sin autenticación",
+    "price": 100
+}
+
+###
+
+#### 3. Crear 5 productos con ID fijo
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-001",
+    "title": "Producto 1",
+    "price": 100
+}
+
+###
+
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-002",
+    "title": "Producto 2",
+    "price": 200
+}
+
+###
+
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-003",
+    "title": "Producto 3",
+    "price": 300
+}
+
+###
+
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-004",
+    "title": "Producto 4",
+    "price": 400
+}
+
+###
+
+POST http://localhost:3000/admin/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-005",
+    "title": "Producto 5",
+    "price": 500
+}
+
+###
+
+#### 4. Eliminar un producto
+DELETE http://localhost:3000/admin/products/prod-005
+x-auth: admin
+
+###
+
+#### 5. Consultar un producto por ID
+GET http://localhost:3000/products/prod-003
+
+###
+
+#### 6. Consultar productos con parámetro de filtrado
+GET http://localhost:3000/products?search=Producto%202
+
+###
+
+#### 7. Editar un producto para cambiar su nombre
+PUT http://localhost:3000/admin/products/prod-002
+Content-Type: application/json
+x-auth: admin
+
+{
+    "title": "Producto 2 Editado",
+    "price": 200
+}
+
+###
+
+#### 8. Mostrar el arreglo de productos actualizado
+GET http://localhost:3000/products
+
+###
+
+#### 9. Añadir tres productos al carrito
+POST http://localhost:3000/products/cart
+Content-Type: application/json
+
+{
+    "items": [
+        { "id": "prod-001", "cantidad": 2 },
+        { "id": "prod-002", "cantidad": 1 },
+        { "id": "prod-003", "cantidad": 3 }
+    ]
+}
+
+###
+
+#### 10. Intentar agregar un producto inexistente al carrito
+POST http://localhost:3000/products/cart
+Content-Type: application/json
+
+{
+    "items": [
+        { "id": "prod-999", "cantidad": 1 }
+    ]
+}
+
+###
+
+#### 11. En tu navegador, verifica las siguientes rutas para los archivos HTML:
+# - http://localhost:3000/
+# - http://localhost:3000/home
+# - http://localhost:3000/shopping_cart
