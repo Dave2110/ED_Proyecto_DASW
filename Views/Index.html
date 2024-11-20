@@ -21,7 +21,6 @@
 
         <!--definiendo el max height y min height de las imagenes de mis productos-->
         <style>
-
             .producto-card {
                 display: flex;
                 flex-direction: column;
@@ -42,9 +41,9 @@
             }
 
             .imagenes_productos {
-                max-height: 600px;
-                min-height: 600px;
-                width: 100%;
+                width: 100%; /* Ancho total del contenedor */
+                aspect-ratio: 1 / 1; /* Relación de aspecto cuadrada */
+                object-fit: cover; /* Ajusta la imagen sin distorsión */
                 border-radius: 10px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -55,6 +54,7 @@
                 box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
                 cursor: pointer;
             }
+
 
 
             body {

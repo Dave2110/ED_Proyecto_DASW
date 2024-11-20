@@ -220,7 +220,7 @@ async function confirmarAgregarCarrito() {
         actualizarContadorCarrito(carrito);
 
         // Redirigo al carrito como lo pide el profe Dorx 
-        window.location.href = "Cart.html"; 
+       // window.location.href = "Cart.html"; 
 
     } catch (error) {
         console.error('Error al obtener el producto:', error);
