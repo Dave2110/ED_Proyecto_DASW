@@ -126,5 +126,13 @@
     "imageUrl": "../Images/Desodorante.jpg",
     "description": "",
     "category": "Otros"
+  },
+  {
+    "uuid": "prod-017",
+    "title": "Cannabis para perro",
+    "price": 450,
+    "imageUrl": "../Images/Cannabis_Perro.jpg",
+    "description": "Cannabis para perro",
+    "category": "Otros"
   }
 ]

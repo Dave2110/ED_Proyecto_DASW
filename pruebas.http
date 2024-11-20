@@ -94,7 +94,7 @@ GET http://localhost:3000/products?search=Producto%202
 ###
 
 #### 7. Editar un producto para cambiar su nombre
-PUT http://localhost:3000/admin/products/prod-002
+PUT http://localhost:3000/admin/products/prod-017
 Content-Type: application/json
 x-auth: admin
 

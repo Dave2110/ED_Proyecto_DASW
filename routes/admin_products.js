@@ -134,6 +134,8 @@ router.delete('/:id', validateAdmin, async(req,res) =>{
 
 });
 
+//nuevas rutas para qeu funcione con total
+
 
 
 module.exports = {router, validateAdmin};
