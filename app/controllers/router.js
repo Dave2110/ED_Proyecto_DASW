@@ -85,9 +85,9 @@ router.get('/Tinturas_Madre.html', (req, res) => {
 });
 
 //Queda al pendiente hacer el de admin
-router.get('/admin.html', (req, res) => {
-    console.log("Accediendo a la ruta /admin.html");
-    res.sendFile(path.resolve(__dirname, '../../views/admin.html'));
+router.get('/Admin.html', (req, res) => {
+    console.log("Accediendo a la ruta /Admin.html");
+    res.sendFile(path.resolve(__dirname, '../../views/Admin.html'));
 });
 
 module.exports = router;

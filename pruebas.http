@@ -3,10 +3,7 @@ GET http://localhost:3000/products
 
 ###
 GET http://localhost:3000/products/total
-###
 
-###
-GET http://localhost:3000/products/geles
 
 #### 2. Intentar crear un producto sin autenticación (debería fallar)
 POST http://localhost:3000/admin/products

@@ -54,6 +54,9 @@ app.use('/app', express.static(path.join(__dirname, 'app')));
 // 
 app.use('/views', express.static(path.join(__dirname, 'views')));
 
+//
+app.use('/Images', express.static(path.join(__dirname, '../Images')));
+
 // 
 app.use('/api', router);
 
@@ -71,6 +74,8 @@ app.get('/app/home.js', (req, res) => {
 app.get('/app/controllers/carrito', (req, res) => {
     res.sendFile(path.join(__dirname, 'app', 'controllers', 'carrito.js'));
 });
+
+
 
 
 console.log("Middleware de archivos estáticos configurado");

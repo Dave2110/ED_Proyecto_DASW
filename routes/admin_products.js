@@ -41,6 +41,11 @@ router.post('/', validateAdmin, async (req, res) => {
         return res.status(400).json({ message: "Datos del producto incompletos. Se requieren 'title' y 'price'." });
     }
 
+    // Validar y ajustar la ruta de la imagen
+    if (!newProduct.imageUrl.startsWith('../Images/')) {
+        newProduct.imageUrl = `../Images/${newProduct.imageUrl}`;
+    }
+
     try {
         // Cargar los productos actuales desde el archivo de datos
         const products = await cargar_parsear_productos();

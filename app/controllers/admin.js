@@ -1,165 +1,87 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const modalLogin = new bootstrap.Modal(document.getElementById('log_modal'));
-    const modalLogout = new bootstrap.Modal(document.getElementById('log_out_modal'));
-    const modalRegistro = new bootstrap.Modal(document.getElementById('sign_up'));
+const apiUrl = 'http://localhost:3000/products/total'; // Ruta de la API de productos
 
-    const botonLogin = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#log_modal"]');
-    const botonLogout = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#log_out_modal"]');
-    const botonRegistro = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#sign_up"]');
-
-    const contenedorProductos = document.querySelector('#products_container');
-    const formularioProducto = document.querySelector('#product_form');
-    const formularioActualizarProducto = document.querySelector('#update_product_form');
-
-    let esAdmin = false;
-
-    async function mostrarProductos() {
-        try {
-            const respuesta = await fetch('http://localhost:3000/products');
-            const productos = await respuesta.json();
-            contenedorProductos.innerHTML = '';
-            productos.forEach((producto, index) => {
-                const tarjetaProducto = document.createElement('div');
-                tarjetaProducto.classList.add('card', 'mb-3');
-                tarjetaProducto.innerHTML = `
-                    <div class="card-body">
-                        <h5 class="card-title">${producto.name}</h5>
-                        <p class="card-text">Precio: $${producto.price}</p>
-                        <button class="btn btn-warning btn-sm" onclick="editarProducto(${producto.id})">Editar</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${producto.id})">Eliminar</button>
-                    </div>
-                `;
-                contenedorProductos.appendChild(tarjetaProducto);
-            });
-        } catch (error) {
-            console.error('Error al cargar los productos:', error);
+// Cargar productos y mostrarlos en la tabla
+async function loadProducts() {
+    try {
+        const response = await fetch(apiUrl, { headers: { 'x-auth': 'admin' } });
+        if (!response.ok) {
+            throw new Error('Error al cargar productos: ' + response.statusText);
         }
+        const products = await response.json();
+        const tableBody = document.getElementById('productTable');
+        tableBody.innerHTML = ''; // Limpiar tabla
+
+        products.forEach(product => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-uuid', product.uuid);
+            row.innerHTML = `
+                <td>${product.uuid}</td>
+                <td class="title">${product.title}</td>
+                <td class="price">${product.price}</td>
+                <td class="category">${product.category || 'Sin Categoría'}</td>
+                <td class="description">${product.description || 'Sin Descripción'}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="editProduct('${product.uuid}')">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.uuid}')">Eliminar</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error al cargar los productos:", error);
     }
+}
 
-    async function agregarProducto(producto) {
-        try {
-            const respuesta = await fetch('http://localhost:3000/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(producto),
-            });
-            const nuevoProducto = await respuesta.json();
-            mostrarProductos();
-        } catch (error) {
-            console.error('Error al agregar el producto:', error);
-        }
-    }
+// Guardar o actualizar producto
+document.getElementById('productForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    window.editarProducto = async function(id) {
-        const producto = await obtenerProductoPorId(id);
-        document.getElementById('update_product_name').value = producto.name;
-        document.getElementById('update_product_price').value = producto.price;
-        document.getElementById('update_product_id').value = producto.id;
-        $('#update_product_modal').modal('show');
-    };
+    const uuid = document.getElementById('uuid').value;
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const imageUrl = document.getElementById('imageUrl').value;
+    const category = document.getElementById('category').value;
+    const description = document.getElementById('description').value;
 
-    async function obtenerProductoPorId(id) {
-        const respuesta = await fetch(`http://localhost:3000/products/${id}`);
-        const producto = await respuesta.json();
-        return producto;
-    }
+    const product = { title, price, imageUrl, category, description };
 
-    formularioActualizarProducto.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const productoActualizado = {
-            name: document.getElementById('update_product_name').value,
-            price: document.getElementById('update_product_price').value,
-        };
-        const id = document.getElementById('update_product_id').value;
-        try {
-            await fetch(`http://localhost:3000/products/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productoActualizado),
-            });
-            mostrarProductos();
-            $('#update_product_modal').modal('hide');
-        } catch (error) {
-            console.error('Error al actualizar el producto:', error);
-        }
+    const method = uuid ? 'PUT' : 'POST';
+    const endpoint = uuid ? `${apiUrl}/${uuid}` : apiUrl;
+
+    await fetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'x-auth': 'admin' },
+        body: JSON.stringify(product)
     });
 
-    window.eliminarProducto = async function(id) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-            try {
-                await fetch(`http://localhost:3000/products/${id}`, {
-                    method: 'DELETE',
-                });
-                mostrarProductos();
-            } catch (error) {
-                console.error('Error al eliminar el producto:', error);
-            }
-        }
-    };
+    // Limpiar formulario después de guardar
+    document.getElementById('productForm').reset();
+    document.getElementById('uuid').value = ''; // Limpiar el campo UUID
 
-    formularioProducto.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const nuevoProducto = {
-            name: document.getElementById('product_name').value,
-            price: document.getElementById('product_price').value,
-        };
-        await agregarProducto(nuevoProducto);
-        formularioProducto.reset();
-    });
-
-    const formularioLogin = document.querySelector('#log_modal form');
-    const formularioRegistro = document.querySelector('#sign_up form');
-
-    formularioLogin.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const correo = document.getElementById('correo').value;
-        const contraseña = document.getElementById('password').value;
-
-        if (correo === 'admin@admin.com' && contraseña === 'admin123') {
-            alert('Acceso autorizado como administrador.');
-            esAdmin = true;
-            modalLogin.hide();
-            mostrarProductos();
-            activarFuncionesAdmin();
-        } else {
-            alert('Credenciales incorrectas.');
-        }
-    });
-
-    const botonLogoutYes = document.querySelector('#log_out_modal .btn-danger');
-    const botonLogoutNo = document.querySelector('#log_out_modal .btn-primary');
-
-    botonLogoutNo.addEventListener('click', () => {
-        modalLogout.hide();
-    });
-
-    botonLogoutYes.addEventListener('click', () => {
-        alert('Sesión cerrada.');
-        esAdmin = false;
-        modalLogout.hide();
-        activarFuncionesAdmin();
-    });
-
-    function activarFuncionesAdmin() {
-        if (esAdmin) {
-            document.querySelector('#admin_features').style.display = 'block';
-        } else {
-            document.querySelector('#admin_features').style.display = 'none';
-        }
-    }
-
-    activarFuncionesAdmin();
+    loadProducts(); // Recargar productos
 });
 
+// Eliminar producto
+async function deleteProduct(uuid) {
+    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
 
-//extrañamente no me cargaba, pero hasta este punto ya estaba fatigado 
+    await fetch(`${apiUrl}/${uuid}`, {
+        method: 'DELETE',
+        headers: { 'x-auth': 'admin' }
+    });
 
-//según mi consola tuve error en la línea 69, pero hasta este punto ya llevaba 10 horas seguidas programando
+    loadProducts(); // Recargar productos
+}
 
-/*
-Mas otras 6 de mi cuenta; ya tendré más tiempo para hacerlo pero despúes por mi cuenta 
-*/
+// Editar producto
+function editProduct(uuid) {
+    const row = document.querySelector(`tr[data-uuid="${uuid}"]`);
+    document.getElementById('uuid').value = uuid;
+    document.getElementById('title').value = row.querySelector('.title').innerText;
+    document.getElementById('price').value = row.querySelector('.price').innerText;
+    document.getElementById('category').value = row.querySelector('.category').innerText;
+    document.getElementById('description').value = row.querySelector('.description').innerText;
+}
+
+// Inicializar carga de productos
+loadProducts();
