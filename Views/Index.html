@@ -353,8 +353,67 @@
                         <span class="carousel-control-next-icon"></span>
                     </button>
                 </div>
-    
-    
+                <!-- Sidebar -->
+            <div class="row">
+                <!-- Sidebar Column -->
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Filtros</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Categorías -->
+                            <div class="mb-4">
+                                <h6 class="card-title">Categorías</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoria" id="todos" value="todos" checked>
+                                    <label class="form-check-label" for="todos">
+                                        Todos
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoria" id="Cremas" value="Cremas">
+                                    <label class="form-check-label" for="Cremas">
+                                        Cremas
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoria" id="Geles" value="Geles">
+                                    <label class="form-check-label" for="Geles">
+                                        Geles
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoria" id="Shampoos" value="Shampoos">
+                                    <label class="form-check-label" for="Shampoos">
+                                        Shampoos
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="categoria" id="Otros" value="Otros">
+                                    <label class="form-check-label" for="Otros">
+                                        Otros
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Rango de Precios -->
+                            <div class="mb-4">
+                                <h6 class="card-title">Rango de Precios</h6>
+                                <div class="price-range">
+                                    <label for="precio-min">Precio Mínimo:</label>
+                                    <input type="number" class="form-control mb-2" id="precio-min" min="0" value="0">
+                                    
+                                    <label for="precio-max">Precio Máximo:</label>
+                                    <input type="number" class="form-control mb-2" id="precio-max" min="0" value="1000">
+                                </div>
+                                <button class="btn btn-primary btn-sm w-100" id="aplicar-filtros">Aplicar Filtros</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            
+
                     <!-- Productos -->
     
                     <!--<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"> es para que en panatallas grandes se muestren 4 columnas
@@ -375,6 +434,8 @@
                             </ul>
                         </nav>
                     </div>
+
+                    
 
     <!-- Modal que hice para agregar al carrito -->
     <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">

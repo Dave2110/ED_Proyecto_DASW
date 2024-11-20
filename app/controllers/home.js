@@ -1,3 +1,66 @@
+async function filtrarProductos(pagina = 1) {
+    // Obtener el valor de la categoría seleccionada y los precios mínimos y máximos
+    const categoriaSeleccionada = document.querySelector('input[name="categoria"]:checked')?.value || 'todos';
+    const precioMin = parseFloat(document.getElementById('precio-min').value) || 0;
+    const precioMax = parseFloat(document.getElementById('precio-max').value) || Infinity;
+
+    try {
+        // Obtener todos los productos
+        const response = await fetch('http://localhost:3000/products/total');
+        const productos = await response.json();
+
+        // Aplicar filtros
+        const productosFiltrados = productos.filter(producto => {
+            const cumpleCategoria = categoriaSeleccionada === 'todos' || 
+                                    producto.category.toLowerCase() === categoriaSeleccionada.toLowerCase();
+            const cumplePrecio = producto.price >= precioMin && producto.price <= precioMax;
+            
+            return cumpleCategoria && cumplePrecio;
+        });
+
+        // Calcular el número total de páginas
+        const totalPaginas = Math.ceil(productosFiltrados.length / Productos_por_pagina);
+        console.log('Total productos filtrados:', productosFiltrados.length);
+        console.log('Total páginas:', totalPaginas);
+
+        // Asegurar que la página actual no exceda el total de páginas
+        pagina = Math.min(pagina, totalPaginas);
+
+        // Calcular los productos para la página actual (paginación)
+        const inicio = (pagina - 1) * Productos_por_pagina;
+        const fin = inicio + Productos_por_pagina;
+        const productosPorPagina = productosFiltrados.slice(inicio, fin);
+
+        // Mostrar los productos filtrados para la página actual
+        mostrar_productos(productosPorPagina);
+        
+        // Actualizar la paginación
+        actualizarPaginacion(pagina, productosFiltrados.length);
+
+    } catch (error) {
+        console.error('Error al filtrar productos:', error);
+        mostrarError('Error al filtrar los productos. Por favor, intente nuevamente.');
+    }
+}
+
+// Event Listeners para aplicar filtros y controlar la paginación
+document.addEventListener('DOMContentLoaded', () => {
+    const aplicarFiltrosBtn = document.getElementById('aplicar-filtros');
+    if (aplicarFiltrosBtn) {
+        aplicarFiltrosBtn.addEventListener('click', () => {
+            filtrarProductos(1); // Empezar desde la primera página
+        });
+    }
+
+    // Agregar event listeners para los radio buttons de categorías
+    document.querySelectorAll('input[name="categoria"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            filtrarProductos(1); // Reseteamos a la primera página cuando cambia la categoría
+        });
+    });
+});
+
+
 //este evento hace que se ejecute cargar_products(1) una vez que el contenido de P01_cart se cargó completamente y el DOM esté listo para que lo use 
 //por eso uso el inner y otras cosas mas 
 document.addEventListener('DOMContentLoaded', () => {
@@ -63,7 +126,7 @@ function actualizarPaginacion(paginaActual, totalProductos) {
 
     // Calcula el número total de páginas
     const totalPaginas = Math.ceil(totalProductos / Productos_por_pagina);
-    //console.log("Productos totales:", totalProductos);
+    console.log("Productos totales:", totalProductos);
     console.log("Productos máximos por página:", Productos_por_pagina);
     console.log("Páginas totales:", totalPaginas);
 
@@ -71,32 +134,32 @@ function actualizarPaginacion(paginaActual, totalProductos) {
     paginationContainer.innerHTML = '';
 
     // Botón "Anterior"
-    paginationContainer.innerHTML += `
-        <li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cargar_productos(${paginaActual - 1})">Anterior</a>
-        </li>
-    `;
+    if (paginaActual > 1) {
+        paginationContainer.innerHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="filtrarProductos(${paginaActual - 1})">Anterior</a>
+            </li>
+        `;
+    }
 
     // Páginas de navegación
     for (let i = 1; i <= totalPaginas; i++) {
-        // Muestra solo páginas cercanas a la actual (ejemplo: 3 páginas a la izquierda y derecha)
-        if (i >= paginaActual - 2 && i <= paginaActual + 2) {
-            paginationContainer.innerHTML += `
-                <li class="page-item ${i === paginaActual ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="cargar_productos(${i})">${i}</a>
-                </li>
-            `;
-        }
+        paginationContainer.innerHTML += `
+            <li class="page-item ${i === paginaActual ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="filtrarProductos(${i})">${i}</a>
+            </li>
+        `;
     }
 
     // Botón "Siguiente"
-    paginationContainer.innerHTML += `
-        <li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cargar_productos(${paginaActual + 1})">Siguiente</a>
-        </li>
-    `;
+    if (paginaActual < totalPaginas) {
+        paginationContainer.innerHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="filtrarProductos(${paginaActual + 1})">Siguiente</a>
+            </li>
+        `;
+    }
 }
-
 // Función para que muestre los  productos en el contenedor
 function mostrar_productos(productos) {
     const containerElement = document.querySelector('#lista-productos');
