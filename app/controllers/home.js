@@ -1,40 +1,69 @@
 async function filtrarProductos(pagina = 1) {
-    // Obtener el valor de la categoría seleccionada y los precios mínimos y máximos
+    // Aquí obtengo las referencias de los precios
+    const precioMinInput = document.getElementById('precio-min');
+    const precioMaxInput = document.getElementById('precio-max');
+
+    // Valido aquí a que sólo se acepten números entereos
+    precioMinInput.addEventListener('input', function(e) {
+        // Aquí remmplazo cualquier caracter que no sea un numero para el precio mínimo
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    precioMaxInput.addEventListener('input', function(e) {
+         // Lo mismo de lo de arriba pero para precio maximo 
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Aquí obtengo el valor de la categoría seleccionada y los precios mínimos y máximos
     const categoriaSeleccionada = document.querySelector('input[name="categoria"]:checked')?.value || 'todos';
-    const precioMin = parseFloat(document.getElementById('precio-min').value) || 0;
-    const precioMax = parseFloat(document.getElementById('precio-max').value) || Infinity;
+    const precioMin = parseFloat(precioMinInput.value) || 0;
+    const precioMax = parseFloat(precioMaxInput.value) || 0;
+
+    // Aquí manejo el caso si ambos precios son igual a cero
+    if (precioMin === 0 && precioMax === 0) {
+        mostrarError('Por favor, ingrese un rango de precios válido.');
+        return;
+    }
+
+    // Valido el precio máximo sea mayor o igual al precio mínimo
+    if (precioMax !== 0 && precioMax < precioMin) {
+        mostrarError('El precio máximo debe ser mayor o igual al precio mínimo.');
+        return;
+    }
 
     try {
-        // Obtener todos los productos
+        // Obtengo aquí todos los productos
         const response = await fetch('http://localhost:3000/products/total');
         const productos = await response.json();
 
-        // Aplicar filtros
+        // Aplico los filtros
         const productosFiltrados = productos.filter(producto => {
             const cumpleCategoria = categoriaSeleccionada === 'todos' || 
                                     producto.category.toLowerCase() === categoriaSeleccionada.toLowerCase();
-            const cumplePrecio = producto.price >= precioMin && producto.price <= precioMax;
+            
+            const cumplePrecio = producto.price >= (precioMin || 0) && 
+                                    (precioMax === 0 || producto.price <= precioMax);
             
             return cumpleCategoria && cumplePrecio;
         });
 
-        // Calcular el número total de páginas
+        // Calculo el número total de páginas
         const totalPaginas = Math.ceil(productosFiltrados.length / Productos_por_pagina);
         console.log('Total productos filtrados:', productosFiltrados.length);
         console.log('Total páginas:', totalPaginas);
 
-        // Asegurar que la página actual no exceda el total de páginas
+        // Aseguro también que la página actual no exceda el total de páginas
         pagina = Math.min(pagina, totalPaginas);
 
-        // Calcular los productos para la página actual (paginación)
+        // Calculo los productos para la página actual (paginación)
         const inicio = (pagina - 1) * Productos_por_pagina;
         const fin = inicio + Productos_por_pagina;
         const productosPorPagina = productosFiltrados.slice(inicio, fin);
 
-        // Mostrar los productos filtrados para la página actual
+        // finalmente muestro los productos filtrados para la página actual
         mostrar_productos(productosPorPagina);
         
-        // Actualizar la paginación
+        // Y obviamente actualizo la paginación
         actualizarPaginacion(pagina, productosFiltrados.length);
 
     } catch (error) {
@@ -43,20 +72,90 @@ async function filtrarProductos(pagina = 1) {
     }
 }
 
-// Event Listeners para aplicar filtros y controlar la paginación
+// Event Listeners para aplicar filtros y controlar la paginación usando la función que acabo de hacer para la filtración
 document.addEventListener('DOMContentLoaded', () => {
     const aplicarFiltrosBtn = document.getElementById('aplicar-filtros');
     if (aplicarFiltrosBtn) {
         aplicarFiltrosBtn.addEventListener('click', () => {
-            filtrarProductos(1); // Empezar desde la primera página
+            filtrarProductos(1); // que empiece desde la p+agina uno
         });
     }
 
-    // Agregar event listeners para los radio buttons de categorías
+    // Agrego event listeners para los radio buttons de categorías también
     document.querySelectorAll('input[name="categoria"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            filtrarProductos(1); // Reseteamos a la primera página cuando cambia la categoría
+            filtrarProductos(1); // Reseteo a la primera página cuando cambia la categoría
         });
+    });
+});
+
+// Hice una función para buscar productos en mi catálogo
+async function buscarProductos(termino) {
+    try {
+        // Primero traigo todos mis productos desde el servidor
+        const response = await fetch('http://localhost:3000/products/total');
+        const productos = await response.json();
+
+        // Ahora filtro los productos que coincidan con mi término de búsqueda
+        const productosFiltrados = productos.filter(producto => {
+            // Convierto todo a minúsculas para que la búsqueda sea más flexible
+            const terminoBusqueda = termino.toLowerCase();
+            
+            // Chequeo si el término aparece en el título, descripción o categoría
+            return (
+                producto.title.toLowerCase().includes(terminoBusqueda) || 
+                producto.description.toLowerCase().includes(terminoBusqueda) ||
+                producto.category.toLowerCase().includes(terminoBusqueda)
+            );
+        });
+
+        // Calculo cuántas páginas necesito para mostrar los resultados
+        const totalPaginas = Math.ceil(productosFiltrados.length / Productos_por_pagina);
+        console.log('Total productos que encontré:', productosFiltrados.length);
+
+        // Agarro los productos para la primera página
+        const productosPorPagina = productosFiltrados.slice(0, Productos_por_pagina);
+        
+        // Muestro los productos que encontré
+        mostrar_productos(productosPorPagina);
+        
+        // Actualizo la paginación para que se vean bien los resultados
+        actualizarPaginacion(1, productosFiltrados.length);
+
+        // Si no encuentro nada, muestro un mensaje para que no se quede con la duda
+        if (productosFiltrados.length === 0) {
+            mostrarError('Ups... No encontré ningún producto que coincida con tu búsqueda. Procura que la escrbiste bien! :)');
+        }
+
+    } catch (error) {
+        console.error('Me dio un error buscando los productos:', error);
+        mostrarError('Tuve un problema buscando los productos. ¿Podrías intentarlo de nuevo?');
+    }
+}
+
+// Configuro los eventos de búsqueda cuando la página ya está cargada
+document.addEventListener('DOMContentLoaded', () => {
+    // Agarro la barra de búsqueda y el botón
+    const barraBusqueda = document.querySelector('input[placeholder="Buscar productos..."]');
+    const botonBuscar = document.querySelector('#botonBuscar');
+
+    // Le digo qué hacer cuando haga clic en el botón de buscar
+    botonBuscar.addEventListener('click', () => {
+        const termino = barraBusqueda.value.trim();
+        if (termino) {
+            buscarProductos(termino);
+        }
+    });
+
+    // También le pongo un atajo por si prefiere darle Enter
+    barraBusqueda.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Evito que haga cualquier otra cosa
+            const termino = barraBusqueda.value.trim();
+            if (termino) {
+                buscarProductos(termino);
+            }
+        }
     });
 });
 
