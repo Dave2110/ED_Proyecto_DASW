@@ -1,6 +1,6 @@
-// Actualizo las URLs base para usar el nuevo prefijo /api/
-const apiUrl = 'http://localhost:3000/api/products';
-const adminApiUrl = 'http://localhost:3000/api/products';
+// Actualizo las URLs base para usar el nuevo prefijo /mongoo/
+const apiUrl = 'http://localhost:3000/mongoo/products';
+const adminApiUrl = 'http://localhost:3000/mongoo/products';
 
 // Cargar productos y mostrarlos en la tabla
 async function loadProducts() {
@@ -129,7 +129,7 @@ document.getElementById('editProductForm').addEventListener('submit', async (eve
 
     const product = {
         title,
-        price,
+        price: price, // Cambiado a Price con mayúscula para coincidir con el backend
         category,
         description,
         imageUrl
@@ -207,9 +207,20 @@ async function searchProducts(query) {
         tableBody.innerHTML = '';
         
         data.forEach(product => {
-            // Usar el mismo código de renderizado que en loadProducts
             const row = document.createElement('tr');
-            // ... resto del código de renderizado
+            row.setAttribute('data-uuid', product.uuid);
+            row.innerHTML = `
+                <td class="uuid">${product.uuid}</td>
+                <td class="title">${product.title}</td>
+                <td class="price">${product.price}</td>
+                <td class="category">${product.category || 'Otros'}</td>
+                <td class="description">${product.description || 'Sin Descripción'}</td>
+                <td class="image">${product.imageUrl || 'Sin Imagen'}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="showEditForm('${product.uuid}')">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.uuid}')">Eliminar</button>
+                </td>
+            `;
             tableBody.appendChild(row);
         });
     } catch (error) {

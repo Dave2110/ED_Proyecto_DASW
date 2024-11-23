@@ -1,15 +1,15 @@
 #### 1. Mostrar productos con paginación (8 por defecto)
-GET http://localhost:3000/api/products
+GET http://localhost:3000/mongoo/products
 
 ###
 
 #### 2. Mostrar todos los productos sin paginación
-GET http://localhost:3000/api/products/total
+GET http://localhost:3000/mongoo/products/total
 
 ###
 
 #### 3. Intentar crear un producto sin autenticación (debería fallar)
-POST http://localhost:3000/api/products
+POST http://localhost:3000/mongoo/products
 Content-Type: application/json
 
 {
@@ -23,12 +23,12 @@ Content-Type: application/json
 ###
 
 #### 4. Crear productos con autenticación de administrador
-POST http://localhost:3000/api/products
+POST http://localhost:3000/mongoo/products
 Content-Type: application/json
 x-auth: admin
 
 {
-    "uuid": "prod-018",
+    "uuid": "prod-020",
     "title": "Crema Hidratante",
     "price": 150,
     "imageUrl": "crema1.jpg",
@@ -38,7 +38,7 @@ x-auth: admin
 
 ###
 
-POST http://localhost:3000/api/products
+POST http://localhost:3000/mongoo/products
 Content-Type: application/json
 x-auth: admin
 
@@ -53,7 +53,7 @@ x-auth: admin
 
 ###
 
-POST http://localhost:3000/api/products
+POST http://localhost:3000/mongoo/products
 Content-Type: application/json
 x-auth: admin
 
@@ -69,23 +69,23 @@ x-auth: admin
 ###
 
 #### 5. Eliminar un producto
-DELETE http://localhost:3000/api/products/prod-019
+DELETE http://localhost:3000/mongoo/products/prod-020
 x-auth: admin
 
 ###
 
 #### 6. Consultar un producto por ID
-GET http://localhost:3000/api/products/prod-018
+GET http://localhost:3000/mongoo/products/prod-018
 
 ###
 
 #### 7. Consultar productos con búsqueda
-GET http://localhost:3000/api/products?search=Crema
+GET http://localhost:3000/mongoo/products?search=Crema
 
 ###
 
 #### 8. Editar un producto
-PUT http://localhost:3000/api/products/prod-018
+PUT http://localhost:3000/mongoo/products/prod-018
 Content-Type: application/json
 x-auth: admin
 
@@ -100,7 +100,7 @@ x-auth: admin
 ###
 
 #### 9. Añadir productos al carrito
-POST http://localhost:3000/api/products/cart
+POST http://localhost:3000/mongoo/products/cart
 Content-Type: application/json
 
 {
@@ -113,7 +113,7 @@ Content-Type: application/json
 ###
 
 #### 10. Intentar añadir producto inexistente al carrito
-POST http://localhost:3000/api/products/cart
+POST http://localhost:3000/mongoo/products/cart
 Content-Type: application/json
 
 {

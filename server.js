@@ -2,7 +2,7 @@
 const express = require('express');
 
 const path = require('path');
-
+ 
 //importación de router.js
 
 const router = require('./app/controllers/router');
@@ -87,6 +87,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+let mongoConnection = "mongodb+srv://admin:Nino2004@myapp.b6bzw.mongodb.net/MyAppDB";
 
 let db = mongoose.connection;
 
@@ -177,8 +179,7 @@ const validateAdmin = (req, res, next) => {
 // RUTAS DE LA API
 
 // Ruta GET para obtener los productos con paginación
-
-app.get('/api/products', async (req, res) => {
+app.get('/mongoo/products', async (req, res) => {
     try {
         const limit = parseInt(req.query._limit) || 8;
         const start = parseInt(req.query._start) || 0;
@@ -203,7 +204,7 @@ app.get('/api/products', async (req, res) => {
 });
 
 // Ruta para obtener el total de productos según el filtro
-app.get('/api/products/total', async (req, res) => {
+app.get('/mongoo/products/total', async (req, res) => {
     try {
         let query = {};
 
@@ -224,9 +225,8 @@ app.get('/api/products/total', async (req, res) => {
     }
 });
 
-
 // Ruta POST para agregar un nuevo producto (solo administradores)
-app.post('/api/products', validateAdmin, async (req, res) => {
+app.post('/mongoo/products', validateAdmin, async (req, res) => {
     const newProduct = req.body;
 
     if (!newProduct || !newProduct.title || !newProduct.price) {
@@ -249,12 +249,12 @@ app.post('/api/products', validateAdmin, async (req, res) => {
 });
 
 // Ruta PUT para actualizar un producto
-app.put('/api/products/:id', validateAdmin, async (req, res) => {
+app.put('/mongoo/products/:id', validateAdmin, async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
     // Validación de campos requeridos
-    if (!updateData || !updateData.title || !updateData.Price) {
+    if (!updateData || !updateData.title || !updateData.price) {
         return res.status(400).json({ message: "Datos del producto incompletos. Se requieren 'title' y 'Price'." });
     }
 
@@ -266,10 +266,10 @@ app.put('/api/products/:id', validateAdmin, async (req, res) => {
 
         const updatedProduct = await Product.findOneAndUpdate(
             { uuid: id },
-            { $set: updateData }, // Usar $set para asegurar que solo se actualizan los campos proporcionados
+            { $set: updateData },
             { 
-                new: true, // Retorna el documento actualizado
-                runValidators: true // Ejecuta las validaciones del esquema
+                new: true,
+                runValidators: true
             }
         );
 
@@ -288,7 +288,7 @@ app.put('/api/products/:id', validateAdmin, async (req, res) => {
 });
 
 // Ruta DELETE para eliminar un producto
-app.delete('/api/products/:id', validateAdmin, async (req, res) => {
+app.delete('/mongoo/products/:id', validateAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -306,7 +306,7 @@ app.delete('/api/products/:id', validateAdmin, async (req, res) => {
 });
 
 // Ruta POST para el carrito
-app.post('/api/products/cart', async (req, res) => {
+app.post('/mongoo/products/cart', async (req, res) => {
     const { items } = req.body;
     
     if (!Array.isArray(items)) {
@@ -341,7 +341,7 @@ app.post('/api/products/cart', async (req, res) => {
 });
 
 // Ruta GET para obtener un producto por ID
-app.get('/api/products/:id', async (req, res) => {
+app.get('/mongoo/products/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const product = await Product.findOne({ uuid: id });
@@ -354,7 +354,6 @@ app.get('/api/products/:id', async (req, res) => {
         res.status(500).json({ message: "Error al obtener el producto." });
     }
 });
-
 // Importación de la función generateUUID
 const { generateUUID } = require('./app/controllers/utils');
 //genérame las rutas que ya tengo hechas y que me sirven pero para que me sirva bajo mi esquema y mi DB en mongooDB
