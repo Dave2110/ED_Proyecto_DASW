@@ -61,11 +61,6 @@ app.use('/Images', express.static(path.join(__dirname, '../Images')));
 app.use('/api', router);
 
 // 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'P01_index.html'));
-});
-
-// 
 app.get('/app/home.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'app', 'home.js'));
 });
@@ -80,6 +75,291 @@ app.get('/app/controllers/carrito', (req, res) => {
 
 console.log("Middleware de archivos estáticos configurado");
 //Ahora sí, levantar el servidor en el puerto 3000 como lo pide el profe 
+
+//TODA LA LÓGICA PARA MongoDB
+
+const cors = require('cors');
+
+const mongoose = require('mongoose');
+
+app.use(cors({
+    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
+
+app.use(express.json());
+
+let mongoConnection = "mongodb+srv://admin:Nino2004@myapp.b6bzw.mongodb.net/MyAppDB";
+
+let db = mongoose.connection;
+
+db.on('connecting', () => {
+    console.log("conectando..");
+    console.log(mongoose.connection.readyState)
+});
+
+db.on('connected', () => {
+    console.log("conectado exitosamente");
+    console.log(mongoose.connection.readyState);
+})
+
+mongoose.connect(mongoConnection)
+    .then(() => {
+        console.log('¡Conectado exitosamente a la base de datos!');
+    })
+    .catch(err => {
+        console.error('Error de conexión a la base de datos:', err);
+    });
+
+    let ProductSchema = mongoose.Schema({
+        uuid: {
+            type:String,
+            required:true
+        },
+        title: {
+            type: String,
+            required: true
+        },
+        price: {
+            type: Number,
+            min: 10,
+            required: true
+        },
+        imageUrl: {
+            type: String,
+            required: true
+        },
+        description: {
+            type: String,
+        },
+        category: {
+            type: String,
+            enum: ['Cremas', 'Geles', 'Shampoo', 'Otros'],
+            required: true
+        }
+    });
+
+    let Product = mongoose.model('EcoSeda', ProductSchema, 'EcoSeda');
+
+    // Función para obtener productos con paginación
+async function obtener_productos(query, start, limit) {
+    try {
+        const products = await Product.find(query)
+            .skip(start)
+            .limit(limit);
+        return products;
+    } catch (error) {
+        console.error("Error al obtener los productos desde MongoDB: ", error);
+        throw error;
+    }
+}
+
+// Función para obtener todos los productos
+async function obtener_todos_los_productos(query) {
+    try {
+        const products = await Product.find(query);
+        return products;
+    } catch (error) {
+        console.error("Error al obtener todos los productos desde MongoDB: ", error);
+        throw error;
+    }
+}
+
+
+    // Middleware para validar administrador
+const validateAdmin = (req, res, next) => {
+    console.log('Headers recibidos:', req.headers);
+    const authHeader = req.headers['x-auth'];
+    console.log('validateAdmin middleware:', authHeader); 
+    if (authHeader !== 'admin') {
+        return res.status(403).json({ message: "Acceso no autorizado, no se cuenta con privilegios de administrador." });
+    }
+    next();
+};
+
+// RUTAS DE LA API
+
+// Ruta GET para obtener los productos con paginación
+// Ruta para obtener productos con paginación
+app.get('/api/products', async (req, res) => {
+    try {
+        const limit = parseInt(req.query._limit) || 8;
+        const start = parseInt(req.query._start) || 0;
+        let query = {};
+
+        // Filtro de búsqueda por título
+        if (req.query.search) {
+            query.title = { $regex: req.query.search, $options: 'i' };
+        }
+
+        console.log("Query:", query);
+        console.log("Limit:", limit, "Start:", start);
+
+        const products = await obtener_productos(query, start, limit);
+        console.log("Products:", products);
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Error al obtener los productos: ", error);
+        res.status(500).json({ message: "Error al obtener los productos." });
+    }
+});
+
+// Ruta para obtener el total de productos según el filtro
+app.get('/api/products/total', async (req, res) => {
+    try {
+        let query = {};
+
+        // Filtro de búsqueda por título
+        if (req.query.search) {
+            query.title = { $regex: req.query.search, $options: 'i' };
+        }
+
+        console.log("Query para MongoDB:", query);
+
+        const products = await obtener_todos_los_productos(query);
+        console.log("Productos encontrados:", products);
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Error al obtener los productos: ", error);
+        res.status(500).json({ message: "Error al obtener los productos." });
+    }
+});
+
+
+// Ruta POST para agregar un nuevo producto (solo administradores)
+app.post('/api/products', validateAdmin, async (req, res) => {
+    const newProduct = req.body;
+
+    if (!newProduct || !newProduct.title || !newProduct.price) {
+        return res.status(400).json({ message: "Datos del producto incompletos. Se requieren 'title' y 'price'." });
+    }
+
+    if (!newProduct.imageUrl.startsWith('../Images/')) {
+        newProduct.imageUrl = `../Images/${newProduct.imageUrl}`;
+    }
+
+    try {
+        newProduct.uuid = newProduct.uuid || generateUUID();
+        const product = new Product(newProduct);
+        const savedProduct = await product.save();
+        res.status(201).json({ message: "Producto agregado exitosamente.", product: savedProduct });
+    } catch (error) {
+        console.error("Error al agregar el producto: ", error);
+        res.status(500).json({ message: "Error al agregar el producto." });
+    }
+});
+
+// Ruta PUT para actualizar un producto
+app.put('/api/products/:id', validateAdmin, async (req, res) => {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Validación de campos requeridos
+    if (!updateData || !updateData.title || !updateData.Price) {
+        return res.status(400).json({ message: "Datos del producto incompletos. Se requieren 'title' y 'Price'." });
+    }
+
+    try {
+        // Asegurar que la imageUrl tenga el formato correcto
+        if (updateData.imageUrl && !updateData.imageUrl.startsWith('../Images/')) {
+            updateData.imageUrl = `../Images/${updateData.imageUrl}`;
+        }
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            { uuid: id },
+            { $set: updateData }, // Usar $set para asegurar que solo se actualizan los campos proporcionados
+            { 
+                new: true, // Retorna el documento actualizado
+                runValidators: true // Ejecuta las validaciones del esquema
+            }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.status(200).json({ 
+            message: "Producto actualizado exitosamente.", 
+            product: updatedProduct 
+        });
+    } catch (error) {
+        console.error("Error al actualizar el producto: ", error);
+        res.status(500).json({ message: "Error al actualizar el producto." });
+    }
+});
+
+// Ruta DELETE para eliminar un producto
+app.delete('/api/products/:id', validateAdmin, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedProduct = await Product.findOneAndDelete({ uuid: id });
+
+        if (!deletedProduct) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.status(200).json({ message: "Producto eliminado exitosamente.", product: deletedProduct });
+    } catch (error) {
+        console.error("Error al eliminar el producto: ", error);
+        res.status(500).json({ message: "Error al eliminar el producto." });
+    }
+});
+
+// Ruta POST para el carrito
+app.post('/api/products/cart', async (req, res) => {
+    const { items } = req.body;
+    
+    if (!Array.isArray(items)) {
+        return res.status(400).json({ message: "El cuerpo de la solicitud debe ser un arreglo." });
+    }
+
+    try {
+        const productosEncontrados = [];
+        const productosNoEncontrados = [];
+
+        for (const item of items) {
+            const producto = await Product.findOne({ uuid: item.id });
+            if (producto) {
+                productosEncontrados.push({ ...producto.toObject(), cantidad: item.cantidad });
+            } else {
+                productosNoEncontrados.push(item.id);
+            }
+        }
+
+        if (productosNoEncontrados.length > 0) {
+            return res.status(404).json({ 
+                message: "No se encontraron los siguientes productos:",
+                ids: productosNoEncontrados 
+            });
+        }
+
+        res.status(200).json({ message: "Productos agregados al carrito.", productos: productosEncontrados });
+    } catch (error) {
+        console.error("Error al procesar la solicitud: ", error);
+        res.status(500).json({ message: "Error al procesar la solicitud." });
+    }
+});
+
+// Ruta GET para obtener un producto por ID
+app.get('/api/products/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const product = await Product.findOne({ uuid: id });
+        if (!product) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+        return res.status(200).json(product);
+    } catch (error) {
+        console.error("Error al obtener el producto: ", error);
+        res.status(500).json({ message: "Error al obtener el producto." });
+    }
+});
+
+// Importación de la función generateUUID
+const { generateUUID } = require('./app/controllers/utils');
+//genérame las rutas que ya tengo hechas y que me sirven pero para que me sirva bajo mi esquema y mi DB en mongooDB
 const puerto = 3000;
 app.listen(puerto, () => {
     console.log("Servidor corriendo en http://localhost:3000");

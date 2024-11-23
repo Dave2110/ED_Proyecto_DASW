@@ -1,0 +1,135 @@
+#### 1. Mostrar productos con paginación (8 por defecto)
+GET http://localhost:3000/api/products
+
+###
+
+#### 2. Mostrar todos los productos sin paginación
+GET http://localhost:3000/api/products/total
+
+###
+
+#### 3. Intentar crear un producto sin autenticación (debería fallar)
+POST http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+    "title": "Crema Hidratante",
+    "Price": 150,
+    "imageUrl": "crema1.jpg",
+    "description": "Crema hidratante para piel seca",
+    "category": "Cremas"
+}
+
+###
+
+#### 4. Crear productos con autenticación de administrador
+POST http://localhost:3000/api/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-018",
+    "title": "Crema Hidratante",
+    "price": 150,
+    "imageUrl": "crema1.jpg",
+    "description": "Crema hidratante para piel seca",
+    "category": "Cremas"
+}
+
+###
+
+POST http://localhost:3000/api/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-019",
+    "title": "Gel Limpiador",
+    "price": 200,
+    "imageUrl": "gel1.jpg",
+    "description": "Gel limpiador facial suave",
+    "category": "Geles"
+}
+
+###
+
+POST http://localhost:3000/api/products
+Content-Type: application/json
+x-auth: admin
+
+{
+    "uuid": "prod-003",
+    "title": "Shampoo Revitalizante",
+    "price": 300,
+    "imageUrl": "shampoo1.jpg",
+    "description": "Shampoo para cabello dañado",
+    "category": "Shampoo"
+}
+
+###
+
+#### 5. Eliminar un producto
+DELETE http://localhost:3000/api/products/prod-019
+x-auth: admin
+
+###
+
+#### 6. Consultar un producto por ID
+GET http://localhost:3000/api/products/prod-018
+
+###
+
+#### 7. Consultar productos con búsqueda
+GET http://localhost:3000/api/products?search=Crema
+
+###
+
+#### 8. Editar un producto
+PUT http://localhost:3000/api/products/prod-018
+Content-Type: application/json
+x-auth: admin
+
+{
+    "title": "Crema Blanqueadora Premium",
+    "Price": 120,
+    "imageUrl": "Crema_Blanqueadora_Premium.jpg",
+    "description": "Crema blanqueadora de alta calidad",
+    "category": "Cremas"
+}
+
+###
+
+#### 9. Añadir productos al carrito
+POST http://localhost:3000/api/products/cart
+Content-Type: application/json
+
+{
+    "items": [
+        { "id": "prod-001", "cantidad": 2 },
+        { "id": "prod-002", "cantidad": 1 }
+    ]
+}
+
+###
+
+#### 10. Intentar añadir producto inexistente al carrito
+POST http://localhost:3000/api/products/cart
+Content-Type: application/json
+
+{
+    "items": [
+        { "id": "prod-999", "cantidad": 1 }
+    ]
+}
+
+###
+
+#### Notas importantes:
+# 1. Todos los endpoints ahora usan el prefijo /api/
+# 2. Los productos requieren campos adicionales (category, imageUrl, description)
+# 4. Las categorías deben ser una de: ['Cremas', 'Geles', 'Shampoo', 'Otros']
+# 5. La autenticación de admin se hace con el header x-auth: admin
+# 6. Las rutas HTML siguen siendo accesibles en:
+#    - http://localhost:3000/
+#    - http://localhost:3000/home
+#    - http://localhost:3000/shopping_cart
