@@ -88,8 +88,6 @@ app.use(cors({
 
 app.use(express.json());
 
-let mongoConnection = "mongodb+srv://admin:Nino2004@myapp.b6bzw.mongodb.net/MyAppDB";
-
 let db = mongoose.connection;
 
 db.on('connecting', () => {
@@ -179,7 +177,7 @@ const validateAdmin = (req, res, next) => {
 // RUTAS DE LA API
 
 // Ruta GET para obtener los productos con paginación
-// Ruta para obtener productos con paginación
+
 app.get('/api/products', async (req, res) => {
     try {
         const limit = parseInt(req.query._limit) || 8;
