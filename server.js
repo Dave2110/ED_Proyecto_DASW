@@ -88,6 +88,8 @@ app.use(cors({
 
 app.use(express.json());
 
+//Aquí va mi mongooconnection con mis crede¿nciales de mongooDB, pero no decidí hacerlo por la cuestión de que me dijneropn que me puden cobrar
+//esto nadamás para cuando lo suba a github, poero pondre la variable y sus valores en un .gitignore
 let mongoConnection = "mongodb+srv://admin:Nino2004@myapp.b6bzw.mongodb.net/MyAppDB";
 
 let db = mongoose.connection;
@@ -357,6 +359,20 @@ app.get('/mongoo/products/:id', async (req, res) => {
 // Importación de la función generateUUID
 const { generateUUID } = require('./app/controllers/utils');
 //genérame las rutas que ya tengo hechas y que me sirven pero para que me sirva bajo mi esquema y mi DB en mongooDB
+
+//espacio de rutas para que sirvan los inicios de sesión: 
+const authController = require('./app/controllers/logs');
+
+// Authentication Routes
+app.post('/mongoo/auth/register', authController.register);
+app.post('/mongoo/auth/login', authController.login);
+app.get('/mongoo/protected', authController.verifyToken, (req, res) => {
+    res.json({ message: 'Ruta protegida', user: req.user });
+});
+
+// Rutas de autenticación
+app.post('/api/auth/register', authController.register);
+app.post('/api/auth/login', authController.login);
 const puerto = 3000;
 app.listen(puerto, () => {
     console.log("Servidor corriendo en http://localhost:3000");
