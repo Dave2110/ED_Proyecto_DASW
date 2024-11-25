@@ -118,7 +118,7 @@ function cancelarCompra() {
     actualizarTotalCarrito([]); // Me aseguro nuevamente de que el total sea 0
 }
 
-function pagar() {
+async function pagar() {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
     if (carrito.length === 0) {
         alert("No hay productos en el carrito.");
@@ -127,26 +127,82 @@ function pagar() {
 
     const total = carrito.reduce((sum, producto) => sum + parseFloat(producto.price) * producto.cantidad, 0);
     const costoEnvio = 90;
-    const totalPago = total + costoEnvio;
+    const totalPago = (total + costoEnvio) * 100; // Stripe requiere el monto en centavos
 
-    const sessionData = {
-        payment_intent: 'pi_123456789',  
-        amount_received: totalPago, 
-        status: 'succeeded',  
-    };
+    try {
+        const response = await fetch('/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({amount: totalPago})
+        });
 
-    if (sessionData.status === 'succeeded') {
-        alert(`El pago de $${totalPago.toFixed(2)} ha sido procesado con Stripe. Gracias por tu compra!`);
+        const paymentIntent = await response.json();
 
-        // Vaciar el carrito en sessionStorage
-        sessionStorage.removeItem('carrito');
-        cargarCarrito(); 
-        actualizarTotalCarrito([]);  
-        console.log("Pago simulado con Stripe, carrito vacío y total actualizado.");
-    } else {
-        alert("Hubo un error en el proceso de pago. Intenta nuevamente.");
+        const stripe = Stripe('tu_public_key_aquí'); // Usa tu llave pública de Stripe aquí
+
+        const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
+            payment_method: {
+                card: cardElement, // Necesitarás configurar `cardElement` con Stripe.js
+                billing_details: {
+                    // Agregar los detalles de facturación necesarios aquí
+                },
+            },
+        });
+
+        if (result.error) {
+            alert(`Error en el pago: ${result.error.message}`);
+        } else {
+            if (result.paymentIntent.status === 'succeeded') {
+                alert(`El pago de $${(totalPago / 100).toFixed(2)} ha sido procesado con éxito. Gracias por tu compra!`);
+                sessionStorage.removeItem('carrito'); // Limpia el carrito
+                cargarCarrito();
+                actualizarTotalCarrito([]); // Asegúrate de que esta función refleje el carrito vacío
+            }
+        }
+    } catch (error) {
+        alert("Hubo un error al procesar el pago. Intenta nuevamente.");
+        console.error("Error al procesar el pago: ", error);
     }
 }
+
+//stripe elements
+var elements = stripe.elements();
+
+// Opciones personalizables para el elemento de la tarjeta
+var style = {
+  base: {
+    color: "#32325d",
+    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+    fontSmoothing: "antialiased",
+    fontSize: "16px",
+    "::placeholder": {
+      color: "#aab7c4"
+    }
+  },
+  invalid: {
+    color: "#fa755a",
+    iconColor: "#fa755a"
+  }
+};
+
+// Crear una instancia del elemento de la tarjeta
+var card = elements.create('card', { style: style });
+
+// Montar el elemento de la tarjeta en el DOM
+card.mount('#card-element');
+
+// Manejar la validación en tiempo real del elemento de la tarjeta
+card.addEventListener('change', function(event) {
+  var displayError = document.getElementById('card-errors');
+  if (event.error) {
+    displayError.textContent = event.error.message;
+  } else {
+    displayError.textContent = '';
+  }
+});
+//stripe elements
 
 // Función para actualizar la cantidad del producto cuando se presiona "Enter"
 function actualizarCantidad(event, productId) {

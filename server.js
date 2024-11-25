@@ -178,6 +178,7 @@ const validateAdmin = (req, res, next) => {
     next();
 };
 
+
 //Stripe
 const stripe = require('stripe')('sk_test_51QOjxQ2Mikwzml28wwWZb7QJCc4k5gzgkZkSUiz9lPBAErZOb2jmeh7XReXaVGduQLORqerClLffeJ65U9cm1vPk00rDvjbPQ4');
 const bodyParser = require('body-parser');
@@ -204,10 +205,6 @@ app.post('/create-payment-intent', async (req, res) => {
     }
 });
 //Stripe
-
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
-});
 
 // RUTAS DE LA API
 
