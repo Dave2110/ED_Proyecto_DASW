@@ -76,6 +76,25 @@ async function buscarProductos(termino) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        // Oculta el botón de "Ingresar"
+        const loginButton = document.getElementById('login_button');
+        if (loginButton) {
+            loginButton.style.display = 'none';
+        }
+    }
+
+    const logoutButton = document.getElementById("confirm_logout");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", function () {
+            localStorage.removeItem('token');
+            
+            window.location.href = "Index.html";
+        });
+    }
+
     cargar_productos(1);
     
     const barraBusqueda = document.querySelector('input[placeholder="Buscar productos..."]');

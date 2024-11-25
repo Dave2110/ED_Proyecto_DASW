@@ -2,11 +2,13 @@ import { Product } from "./products.js";
 import { ShoppingCart } from "./shopping_cart.js";
 import { DataHandler } from "./data_handler.js";
 
+// Verificar si el token existe en el localStorage
+
 const dataHandler = new DataHandler();
 const shoppingCart = new ShoppingCart(dataHandler.getProducts());
 
 console.log("Prueba 1: Arreglo de productos vacío:");
-console.table(dataHandler.getProducts()); 
+//console.table(dataHandler.getProducts()); 
 
 // Prueba 2: Agregar 4 productos
 dataHandler.createProduct(new Product("GUZMAN_SEDA_747865", "producto_1", "URL 1", "piezas", 5, 10, "Alumno"));
@@ -17,7 +19,7 @@ dataHandler.createProduct(new Product("GUZMAN_SEDA_747865", "producto_4", "URL 4
 
 
 console.log("Prueba 2: Productos después de agregar 4 productos:");
-console.table(dataHandler.getProducts());
+//console.table(dataHandler.getProducts());
 
 
 // Prueba 3: Actualizar nombres de dos productos
@@ -32,13 +34,13 @@ dataHandler.updateProduct(productToUpdate1._uuid, updatedProduct1);
 dataHandler.updateProduct(productToUpdate2._uuid, updatedProduct2);
 
 console.log("Prueba 3: Productos después de actualizar 2 productos (el primero y segundo):");
-console.table(dataHandler.getProducts());
+//console.table(dataHandler.getProducts());
 
 // Prueba 4: Eliminar un producto
 dataHandler.deleteProduct(dataHandler.getProducts()[1]._uuid); // Elimina el segundo producto
 
 console.log("Prueba 4: Productos después de eliminar un producto (el segundo producto):");
-console.table(dataHandler.getProducts());
+//console.table(dataHandler.getProducts());
 
 
 //Prueba 5: Excepción al intentar actualizar un producto que no existe 
@@ -58,7 +60,7 @@ shoppingCart.addItem(dataHandler.getProducts()[2]._uuid, 3); // Agrega un elemen
 
 
 console.log("Prueba 6: Carrito después de agregar 3 productos:");
-console.table(shoppingCart.proxies);
+//console.table(shoppingCart.proxies);
 
 
 // Prueba 7: Actualizar cantidad de un producto en el carrito
@@ -66,18 +68,18 @@ shoppingCart.updateItem(shoppingCart.proxies[1].uuid, 10); // actualicé la cant
 
 
 console.log("Prueba 7: Carrito después de actualizar la cantidad de un producto:");
-console.table(shoppingCart.proxies);
+//console.table(shoppingCart.proxies);
 
 // Prueba 8: Eliminar un producto del carrito
 shoppingCart.removeItem(shoppingCart.proxies[1].uuid); // elimino el segundo elemento de mi carrito 
 
 console.log("Prueba 8: Carrito después de eliminar un producto:");
-console.table(shoppingCart.proxies);
+//console.table(shoppingCart.proxies);
 
 // Prueba 9: Verificar el total del carrito
 
 console.log("Productos disponibles antes de calcular el total:");
-console.table(dataHandler.getProducts()); // Imprime todos los productos
+//console.table(dataHandler.getProducts()); // Imprime todos los productos
 
 const total = shoppingCart.calculateTotal();
 
@@ -88,4 +90,5 @@ console.log("Total: $" + total);
 // Prueba Opcional 10: Buscar producto por categoría y título 
 const foundProducts = dataHandler.findProduct("Fruta_Alumno: MANZANA_GUZMAN_SEDA_747865");
 console.log("Prueba Opcional 10: Productos encontrados por categoría y nombre:");
-console.table(foundProducts);
+//console.table(foundProducts);
+

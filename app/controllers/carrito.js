@@ -1,10 +1,29 @@
 // Este evento hace que se ejecute cargarCarrito una vez que el contenido de P01_cart se cargó completamente y el DOM esté listo para que lo use 
 // por eso uso el inner y otras cosas más 
 document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        // Oculta el botón de "Ingresar"
+        const loginButton = document.getElementById('login_button');
+        if (loginButton) {
+            loginButton.style.display = 'none';
+        }
+    }
+
+    const logoutButton = document.getElementById("confirm_logout");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", function () {
+            localStorage.removeItem('token');
+            
+            window.location.href = "cart.html";
+        });
+    }
+
     cargarCarrito();
 });
 
-const stripe = Stripe('pk_test_51QOjxQ2Mikwzml28NoyxWy7wD9usjXRUWaqOYh1Vvnjpjl8TRxkw2bhgzPULj6b13kdHMCkQwnN1PyMOcrJujWqV00ck8CcBXi');
+const stripe = Stripe('sk_test_51QOjxQ2Mikwzml28wwWZb7QJCc4k5gzgkZkSUiz9lPBAErZOb2jmeh7XReXaVGduQLORqerClLffeJ65U9cm1vPk00rDvjbPQ4');
 
 function cargarCarrito() {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
@@ -140,7 +159,7 @@ async function pagar() {
 
         const paymentIntent = await response.json();
 
-        const stripe = Stripe('tu_public_key_aquí'); // Usa tu llave pública de Stripe aquí
+        const stripe = Stripe('pk_test_51QOjxQ2Mikwzml28NoyxWy7wD9usjXRUWaqOYh1Vvnjpjl8TRxkw2bhgzPULj6b13kdHMCkQwnN1PyMOcrJujWqV00ck8CcBXi'); // Usa tu llave pública de Stripe aquí
 
         const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
             payment_method: {

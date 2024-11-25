@@ -143,7 +143,7 @@
             <!-- Modal Body -->
             <div class="modal-body text-center">
                 <button type="button" class="btn btn-primary me-2" data-bs-dismiss="modal">No, seguir en sesión</button>
-                <button type="button" class="btn btn-danger">Sí, salir</button>
+                <button id="confirm_logout" type="button" class="btn btn-danger">Sí, salir</button>
             </div>
         </div>
     </div>
@@ -239,7 +239,7 @@
                                 <button class="btn btn-success" id = "botonBuscar" type="button">Buscar</button>
                             </form>
                             <ul class="navbar-nav ms-auto">
-                                <li class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#log_modal" role="button"><i class="fas fa-user"></i> Ingresar</a></li>
+                                <li id="login_button" class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#log_modal" role="button"><i class="fas fa-user"></i> Ingresar</a></li>
                                 <li class="nav-item"><a class="nav-link" href="Cart.html"><i class="fas fa-shopping-cart"></i></a></li>
                                 <li class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#log_out_modal" role="button"><i class="fas fa-sign-out-alt"></i></a></li>
                             </ul>
@@ -449,5 +449,6 @@
         <!-- Archivo JavaScript Principal -->
         <script src="../app/controllers/home_mdb.js"></script>
         <script src="../app/controllers/auth.js"></script>
+        
     </body>
 </html>
