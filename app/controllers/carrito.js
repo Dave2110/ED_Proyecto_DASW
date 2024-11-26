@@ -1,3 +1,4 @@
+// Este evento hace que se ejecute cargarCarrito una vez que el contenido de P01_cart se cargó completamente y el DOM esté listo para que lo use
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -9,24 +10,34 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = "cart.html";
     });
 
-    cargarCarrito();
+    cargarCarrito(); // Cargar carrito al iniciar
 });
 
+// Función para cargar el carrito desde sessionStorage
 function cargarCarrito() {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    const contenedor = document.getElementById('productosCarrito');
-    contenedor.innerHTML = carrito.length === 0 ? '<p>No hay productos en el carrito.</p>' : '';
+    const productosCarritoContenedor = document.getElementById('productosCarrito');
+    productosCarritoContenedor.innerHTML = ''; // Limpio primero el contenedor antes de agregar nuevos productos
 
-    carrito.forEach(producto => {
-        contenedor.appendChild(createCartProductElement(producto));
-    });
+    if (carrito.length === 0) {
+        productosCarritoContenedor.innerHTML = '<p>No hay productos en el carrito.</p>';
+    } else {
+        // Para cada producto creo un elemento del carrito
+        carrito.forEach(producto => {
+            const productoElement = createCartProductElement(producto);
+            productosCarritoContenedor.appendChild(productoElement);
+        });
 
-    actualizarTotalCarrito(carrito);
+        // Ya creados debo de actualizar el total del carrito
+        actualizarTotalCarrito(carrito);
+    }
 }
 
+// Función para crear el elemento HTML del producto en el carrito
 function createCartProductElement(producto) {
     const div = document.createElement("div");
     div.className = "card mb-3";
+
     div.innerHTML = `
         <div class="row g-0">
             <div class="col-md-4">
@@ -35,26 +46,87 @@ function createCartProductElement(producto) {
             <div class="col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">${producto.title}</h5>
-                    <p class="card-text">Cantidad: <input type="number" id="cantidadInput${producto.uuid}" class="form-control d-inline-block w-auto" min="0" value="${producto.cantidad}" onkeydown="actualizarCantidad(event, '${producto.uuid}')"></p>
+                    <p class="card-text">
+                        Cantidad: 
+                        <input type="number" 
+                               id="cantidadInput${producto.uuid}" 
+                               class="form-control d-inline-block w-auto" 
+                               min="0" 
+                               value="${producto.cantidad}" 
+                               onkeydown="actualizarCantidad(event, '${producto.uuid}')">
+                    </p>
                     <p class="card-text"><strong>Precio:</strong> $${producto.price}</p>
                     <p class="card-text"><strong>Descripción:</strong> ${producto.description}</p>
-                    <button class="btn btn-danger" onclick="eliminarProducto('${producto.uuid}')"><i class="fas fa-trash text-white"></i> Eliminar todo</button>
+
+                    <button class="btn btn-danger" onclick="eliminarProducto('${producto.uuid}')">
+                        <i class="fas fa-trash text-white"></i> Eliminar todo
+                    </button>
                 </div>
             </div>
-        </div>`;
+        </div>
+    `;
     return div;
 }
 
+// Función para actualizar el total del carrito
 function actualizarTotalCarrito(carrito) {
-    const totalElemento = document.getElementById('totalCarrito');
-    const costoEnvioElemento = document.querySelector('.costoEnvio');
-    let total = carrito.reduce((sum, {price, cantidad}) => sum + (parseFloat(price) * parseInt(cantidad)), 0);
-    const costoEnvio = carrito.length > 0 ? 90 : 0;
+    const totalCarritoElemento = document.getElementById('totalCarrito'); // Aquí cambié el id a 'totalCarrito'
+    const costoEnvioElemento = document.querySelector('.costoEnvio'); // Aquí obtengo el elemento que muestra el costo de envío
+    let total = 0;
 
-    totalElemento.textContent = (total + costoEnvio).toFixed(2);
+    // Verifico aquí si el carrito está vacío
+    if (carrito.length === 0) {
+        totalCarritoElemento.textContent = '0.00'; // Muestro 0 cuando el carrito esté vacío
+        costoEnvioElemento.textContent = '0 MXN'; // aquí me encargué de mandar 0 MXN de costo de envío si el carrito está vacío
+        return; // Pues como ya no tiene chiste porque ya hice lo que tuve que hacer hago el return de la función para no hacer más cálculos
+    }
+
+    // Si es que hay productos en el carrito, sumar el costo de los productos
+    carrito.forEach(producto => {
+        total += parseFloat(producto.price) * parseInt(producto.cantidad);
+    });
+
+    // Si efectivamente hay productos, aplico el costo de envío de 90 MXN
+    const costoEnvio = 90;
+    total += costoEnvio;
+
+    // Muestro el costo de envío en el HTML
     costoEnvioElemento.textContent = `${costoEnvio} MXN`;
+
+    // Muestro el total actualizado
+    totalCarritoElemento.textContent = total.toFixed(2);
 }
 
+// Función para eliminar un producto del carrito
+function eliminarProducto(productId) {
+    const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
+    const carritoActualizado = carrito.filter(producto => producto.uuid !== productId);
+
+    // Actualizo el carrito en sessionStorage después de usar .filter
+    sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+
+    // Recargo el carrito y actualizo el total
+    cargarCarrito();
+    actualizarTotalCarrito(carritoActualizado); // Actualizo el total exactamente aquí 
+}
+
+// Función para vaciar el carrito
+function vaciarCarrito() {
+    sessionStorage.removeItem('carrito');
+    cargarCarrito(); // Recargo el carrito después de vaciarlo
+    actualizarTotalCarrito([]); // Me aseguro bien de que el total sea 0
+}
+
+// Función para cancelar la compra
+function cancelarCompra() {
+    // Lanzo el alert 
+    alert('Compra cancelada');
+    sessionStorage.removeItem('carrito');  // Elimino del carrito
+    cargarCarrito(); // Recargo el carrito para vaciarlo
+    actualizarTotalCarrito([]); // Me aseguro nuevamente de que el total sea 0
+}
+
+// Función para simular el pago
 function pagar() {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
     if (carrito.length === 0) {
@@ -62,29 +134,57 @@ function pagar() {
         return;
     }
 
-    const total = carrito.reduce((sum, {price, cantidad}) => sum + parseFloat(price) * cantidad, 0);
+    const total = carrito.reduce((sum, producto) => sum + parseFloat(producto.price) * producto.cantidad, 0);
     const costoEnvio = 90;
-    const totalPago = Math.round((total + costoEnvio) * 100);
+    const totalPago = total + costoEnvio;
 
-    fetch('/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: totalPago })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.clientSecret) {
-            alert(`El pago de $${(totalPago / 100).toFixed(2)} ha sido procesado con Stripe. Gracias por tu compra!`);
-            sessionStorage.removeItem('carrito');
-            cargarCarrito();
-            actualizarTotalCarrito([]);
-        } else {
-            throw new Error('Payment Intent creation failed');
-        }
-    })
-    .catch(error => {
+    const sessionData = {
+        payment_intent: 'pi_123456789',  
+        amount_received: totalPago, 
+        status: 'succeeded',  
+    };
+
+    if (sessionData.status === 'succeeded') {
+        alert(`El pago de $${totalPago.toFixed(2)} ha sido procesado con Stripe. Gracias por tu compra!`);
+
+        // Vaciar el carrito en sessionStorage
+        sessionStorage.removeItem('carrito');
+        cargarCarrito(); 
+        actualizarTotalCarrito([]);  
+        console.log("Pago simulado con Stripe, carrito vacío y total actualizado.");
+    } else {
         alert("Hubo un error en el proceso de pago. Intenta nuevamente.");
-        console.error('Error:', error);
-    });
+    }
+}
+
+// Función para actualizar la cantidad del producto cuando se presiona "Enter"
+function actualizarCantidad(event, productId) {
+    if (event.key === 'Enter') {
+        const nuevaCantidad = parseInt(event.target.value);
+
+        if (isNaN(nuevaCantidad) || nuevaCantidad < 0) {
+            alert("Por favor, ingresa una cantidad válida.");
+            return;
+        }
+
+        const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
+        const index = carrito.findIndex(item => item.uuid === productId);
+
+        if (index !== -1) {
+            if (nuevaCantidad === 0) {
+                // Si la cantidad es 0, elimina el producto del carrito
+                carrito.splice(index, 1);
+                alert("El producto ha sido eliminado del carrito.");
+            } else {
+                // Si no, simplemente actualiza la cantidad
+                carrito[index].cantidad = nuevaCantidad;
+            }
+            sessionStorage.setItem('carrito', JSON.stringify(carrito)); // Actualizo el carrito
+        }
+
+        // Recargar el carrito con el nuevo valor y actualizar el total
+        cargarCarrito();
+        actualizarTotalCarrito(carrito);
+    }
 }
 
