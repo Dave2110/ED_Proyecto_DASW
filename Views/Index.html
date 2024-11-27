@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Ecoseda</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+
+        <script src="https://kit.fontawesome.com/b96e5277c1.js" crossorigin="anonymous"></script>
+
+        <!--definiendo el max height y min height de las imagenes de mis productos-->
+        <style>
+            .producto-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                height: 100%;
+            }
+
+            .producto-card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .imagenes_productos {
+                width: 100%; /* Ancho total del contenedor */
+                aspect-ratio: 1 / 1; /* Relación de aspecto cuadrada */
+                object-fit: cover; /* Ajusta la imagen sin distorsión */
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .imagenes_productos:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+            }
+
+
+
+            body {
+                background-color: #EFF6E0; 
+            }
+
+            .btn-primary {
+                background-color: #4CAF50; 
+                border-color: #4CAF50;
+            }
+
+            .btn-primary:hover {
+                background-color: #388E3C; 
+            }
+
+            .modal-content {
+                border-radius: 10px;
+            }
+
+            .navbar-brand img {
+                border-radius: 50%;
+                border: 2px solid #FFFFFF; 
+            }
+
+            .filtros-horizontal {
+                display: flex;
+                flex-wrap: wrap; /* Permite que los filtros se ajusten si no caben en una fila */
+                gap: 20px; /* Espacio entre los grupos de filtros */
+                align-items: center; 
+                justify-content: space-around; 
+                padding: 10px;
+                background-color: #388E3C; 
+                border: 1px solid #388E3C; 
+                border-radius: 10px; 
+            }
+
+            .filtro-categoria,
+            .filtro-precio {
+                display: flex;
+                align-items: center; /* Alinea los elementos internos verticalmente */
+                gap: 10px; /* Espaciado entre elementos */
+                border-radius: 10px;
+            }
+
+            .form-check-inline {
+                margin-right: 15px; /* Espaciado horizontal entre radios */
+            }
+
+            .form-control-inline {
+                width: 80px; /* Controla el ancho de los inputs de precio */
+                margin-left: 5px; /* Espaciado izquierdo */
+            }
+
+
+
+
+        </style>
+
+            <!-- Button to Open the Modal -->
+<!-- Modal de Iniciar Sesión -->
+<div class="modal" id="log_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="login_modal">Iniciar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="registerForm">
+                    <!-- Campo de Correo -->
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="email" class="form-control" id="login_correo" placeholder="Ingresa tu correo" required>
+                        </div>
+                    </div>
+                    <!-- Campo de Contraseña -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" required>
+                        </div>
+                    </div>
+                    <!-- Recordar Usuario -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Recordar</label>
+                    </div>
+                    <!-- Botón de Iniciar Sesión -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <p class="mb-0">¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#sign_up">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cerrar Sesión -->
+<div class="modal" id="log_out_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="log_out_modal">¿Deseas cerrar la sesión?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body text-center">
+                <button type="button" class="btn btn-primary me-2" data-bs-dismiss="modal">No, seguir en sesión</button>
+                <button id="confirm_logout" type="button" class="btn btn-danger">Sí, salir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal de Registro -->
+    <div class="modal" id="sign_up">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sign_up_modal">Registrarse</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form>
+                        <div class="container">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="nombre" placeholder="Nombre(s)" required>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="apellidos" placeholder="Apellidos" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="email" class="form-control" id="reg_correo" placeholder="Tu correo" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="password" class="form-control" id="confirm_password" placeholder="Confirmar contraseña" required>
+                                </div>
+                            </div>
+                            <!-- Modal Footer -->
+                            <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Registrarse</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    </head>
+
+
+
+    <body>
+        <header>
+            <!--aquí declaro que la NavBar-->
+
+            <!-- Cabe recalcar que en mi navbar dejé tags de tipo <a> para enlazar todor-->
+                <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #2C5F2D;">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="Index.html">
+                            <img src="../Images/Enhanced_Resolution_EcoSeda.jpg" alt="Logo" width="60" height="60">
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="mynavbar">
+                            <ul class="navbar-nav">
+                                <li class="nav-item"><a class="nav-link" href="Index.html">Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link" href="About_us.html">Sobre nosotros</a></li>
+                            </ul>
+                            <form class="d-flex">
+                                <input class="form-control me-2" type="text" placeholder="Buscar productos...">
+                                <button class="btn btn-success" id = "botonBuscar" type="button">Buscar</button>
+                            </form>
+                            <ul class="navbar-nav ms-auto">
+                                <li id="login_button" class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#log_modal" role="button"><i class="fas fa-user"></i> Ingresar</a></li>
+                                <li class="nav-item"><a class="nav-link" href="Cart.html"><i class="fas fa-shopping-cart"></i></a></li>
+                                <li id="logout_button" class="nav-item"><a class="nav-link" data-bs-toggle="modal" data-bs-target="#log_out_modal" role="button"><i class="fas fa-sign-out-alt"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+        </header>
+
+            <main> 
+            
+                <!-- Carousel -->
+                <div id="demo" class="carousel slide" data-bs-ride="carousel">
+                    <!-- Indicators/dots -->
+                    <div class="carousel-indicators">
+                        <button
+                            type="button"
+                            data-bs-target="#demo"
+                            data-bs-slide-to="0"
+                            class="active"
+                        ></button>
+                        <button
+                            type="button"
+                            data-bs-target="#demo"
+                            data-bs-slide-to="1"
+                        ></button>
+                        <button
+                            type="button"
+                            data-bs-target="#demo"
+                            data-bs-slide-to="2"
+                        ></button>
+                    </div>
+    
+                    <!-- The slideshow/carousel -->
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img 
+                                src="../Images/Foto_Carrusel_3_Final.jpg"
+                                alt="Foto Ecoseda uno"
+                                class="d-block w-100"
+                                style="object-fit: cover; height: 800px;"
+                            />
+                        </div>
+
+    
+                        <div class="carousel-item">
+                            <img 
+                                src="../Images/Foto_Carrusel_2.jpg"
+                                alt="Foto Ecoseda dos"
+                                class="d-block w-100"
+                                style="object-fit: cover; height: 800px;"
+                            />
+                        </div>
+    
+                        <div class="carousel-item">
+                            <img 
+                                src="../Images/Foto_Carrusel_3.jpg"
+                                alt="Foto Ecoseda tres"
+                                class="d-block w-100"
+                                style="object-fit: cover; height: 800px;"
+                            />
+                        </div>
+                    </div>
+    
+                    <!-- Left and right controls/icons -->
+                    <button
+                        class="carousel-control-prev"
+                        type="button"
+                        data-bs-target="#demo"
+                        data-bs-slide="prev"
+                    >
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button
+                        class="carousel-control-next"
+                        type="button"
+                        data-bs-target="#demo"
+                        data-bs-slide="next"
+                    >
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+                <div class="filtros-horizontal">
+                    <!-- Categorías -->
+                    <div id="filtro-categoria">
+                        <h6>Categorías</h6>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="categoria" id="todos" value="todos" checked>
+                            <label class="form-check-label" for="todos">Todos</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="categoria" id="Cremas" value="Cremas">
+                            <label class="form-check-label" for="Cremas">Cremas</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="categoria" id="Geles" value="Geles">
+                            <label class="form-check-label" for="Geles">Geles</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="categoria" id="Shampoos" value="Shampoos">
+                            <label class="form-check-label" for="Shampoos">Shampoos</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="categoria" id="Otros" value="Otros">
+                            <label class="form-check-label" for="Otros">Otros</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Rango de Precios -->
+                    <div id="filtro-precio">
+                        <h6>Rango de Precios</h6>
+                        <label for="precio-min">Mínimo:</label>
+                        <input type="number" id="precio-min" min="0" value="0">
+                        <label for="precio-max">Máximo:</label>
+                        <input type="number" id="precio-max" min="0" value="1000">
+                        <button id="aplicar-filtros" onclick="filtrarProductos()">Aplicar</button>
+                    </div>
+                </div>
+                
+
+                    <!-- Productos -->
+    
+                    <!--<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"> es para que en panatallas grandes se muestren 4 columnas
+                        para medianas 3 columnas, para pequeñas dos columnas, para muy pequeñas una cplumna -->
+                    <div class="container productos mt-5">
+                        <h2 class="mb-4">Nuestros Productos</h2>
+                        <!-- Contenedor principal para los productos -->
+                        <div id="lista-productos" class="row">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-6 mb-4">
+                                <!-- Los productos se insertan dinámicamente con el uso del id de lista-productos -->
+                            </div>
+                        </div>
+                        
+                        <!-- Paginación -->
+                        <nav aria-label="Navegación de productos" class="mt-4">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- con esto hago que con la id haga la paginación dinámicamente -->
+                            </ul>
+                        </nav>
+                    </div>
+
+                    
+
+    <!-- Modal que hice para agregar al carrito -->
+    <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addToCartModalLabel">Agregar al Carrito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="product-id">
+                    <label for="quantity">Cantidad:</label>
+                    <input type="number" id="quantity" value="1" min="1" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelar-agregar-carrito" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmarAgregarCarrito()">Agregar al carrito</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!--para llevar el contador del carrito-->
+    <span id="contador-carrito">0</span>
+    
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+
+        <!-- Archivo JavaScript Principal -->
+        <script src="../app/controllers/home_mdb.js"></script>
+        <script src="../app/controllers/auth.js"></script>
+        
+    </body>
+</html>
