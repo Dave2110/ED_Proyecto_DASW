@@ -158,7 +158,6 @@ function pagar() {
 function actualizarCantidadInmediata(event, productId) {
     const inputValue = event.target.value;
     const nuevaCantidad = parseInt(inputValue);
-    
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
     const index = carrito.findIndex(item => item.uuid === productId);
     const valorAnterior = carrito[index]?.cantidad || 1;
