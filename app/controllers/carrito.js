@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     errorElement.textContent = result.error.message;
                 } else {
                     if (result.paymentIntent.status === 'succeeded') {
-                        alert('¡Pago completado con éxito!');
+                        alert('¡Pago completado con éxito!, Muchas gracias por su compra!!! :) ');
                         sessionStorage.removeItem('carrito');
                         cargarCarrito();
                         actualizarTotalCarrito([]);
