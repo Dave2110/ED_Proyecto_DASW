@@ -32,7 +32,7 @@ function showAlert(message, type = 'error') {
     }, 3000);
 }
 
-
+//registro de inicio de sesión
 document.getElementById('sign_up').addEventListener('submit', async (e) => {
     e.preventDefault();
 

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarCarrito();
 
     // Inicialización de Stripe Elements
-    var stripe = Stripe('pk_test_51QOjxQ2Mikwzml28NoyxWy7wD9usjXRUWaqOYh1Vvnjpjl8TRxkw2bhgzPULj6b13kdHMCkQwnN1PyMOcrJujWqV00ck8CcBXi'); 
+    var stripe = Stripe('pk_test_51QOjxQ2Mikwzml28NoyxWy7wD9usjXRUWaqOYh1Vvnjpjl8TRxkw2bhgzPULj6b13kdHMCkQwnN1PyMOcrJujWqV00ck8CcBXi');
     var elements = stripe.elements();
 
     var style = {
@@ -61,27 +61,67 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Añadir manejo de envío de formulario
+    // Manejar el envío del formulario con PaymentIntents
     var form = document.getElementById('payment-form');
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        stripe.createToken(card).then(function(result) {
-            if (result.error) {
-                var errorElement = document.getElementById('card-errors');
-                errorElement.textContent = result.error.message;
-            } else {
-                // Aquí podrías llamar a una función que maneje el token de Stripe
-                stripeTokenHandler(result.token);
+    if (form) {
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
+            if (carrito.length === 0) {
+                alert("No hay productos en el carrito.");
+                return;
+            }
+
+            const total = carrito.reduce((sum, { price, cantidad }) => sum + parseFloat(price) * cantidad, 0);
+            const costoEnvio = 90;
+            const totalPago = Math.round((total + costoEnvio) * 100);
+
+            try {
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ amount: totalPago })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al crear el PaymentIntent');
+                }
+
+                const data = await response.json();
+
+                const result = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: {
+                        card: card,
+                        billing_details: {
+                            // Puedes agregar detalles de facturación aquí si los tienes
+                        }
+                    }
+                });
+
+                if (result.error) {
+                    const errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        alert('¡Pago completado con éxito!');
+                        sessionStorage.removeItem('carrito');
+                        cargarCarrito();
+                        actualizarTotalCarrito([]);
+                        window.location.href = '/confirmation.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const errorElement = document.getElementById('card-errors');
+                errorElement.textContent = 'Error al procesar el pago. Por favor, intenta nuevamente.';
             }
         });
-    });
+    }
 });
-
-function stripeTokenHandler(token) {
-    // Implementa el manejo del token aquí, por ejemplo, enviándolo a tu servidor
-    console.log("Token de Stripe recibido:", token);
-    // Enviar token al servidor para realizar el cargo
-}
 
 function cargarCarrito() {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
@@ -187,39 +227,6 @@ function cancelarCompra() {
     sessionStorage.removeItem('carrito');  // Elimino del carrito
     cargarCarrito(); // Recargo el carrito para vaciarlo
     actualizarTotalCarrito([]); // Me aseguro nuevamente de que el total sea 0
-}
-
-function pagar() {
-    const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    if (carrito.length === 0) {
-        alert("No hay productos en el carrito.");
-        return;
-    }
-
-    const total = carrito.reduce((sum, { price, cantidad }) => sum + parseFloat(price) * cantidad, 0);
-    const costoEnvio = 90;
-    const totalPago = Math.round((total + costoEnvio) * 100);
-
-    fetch('/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: totalPago })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.clientSecret) {
-                alert(`El pago de $${(totalPago / 100).toFixed(2)} ha sido procesado con Stripe. Gracias por tu compra!`);
-                sessionStorage.removeItem('carrito');
-                cargarCarrito();
-                actualizarTotalCarrito([]);
-            } else {
-                throw new Error('Payment Intent creation failed');
-            }
-        })
-        .catch(error => {
-            alert("Hubo un error en el proceso de pago. Intenta nuevamente.");
-            console.error('Error:', error);
-        });
 }
 
 function actualizarCantidadInmediata(event, productId) {

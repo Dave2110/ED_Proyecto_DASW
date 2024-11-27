@@ -69,152 +69,118 @@
 
 
             <!-- Button to Open the Modal -->
-        <!-- The Modal aquí agregué la id: log_modal que posteriormente uso donde declaré el ícono de usuario, para que me 
-            abra el modal cuando se le da click -->
-            <div class="modal" id="log_modal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <!-- Modal Header aquí pongo el header y una id de login modal -->
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="#log_modal">Iniciar Sesión</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <!-- Modal body aquí agrego el formulario-->
-    
-                        <div class="modal-body">
-                            <form>
-    
-                                <!--mb-3 para agregar un marge inferior de tamaño 3 y span para los iconos -->
-                                <div class="mb-3">
-                                    <label for="correo" class="form-label">Correo electrónico</label>
-                                    <div class=" input-group">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="correo" class="form-control" id="correo" placeholder="Ingresa tu correo" required>
-                                    </div>
-                                </div>
-    
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Contraseña</label>
-                                    <div class=" input-group">
-                                        <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                        <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" required>
-                                    </div>
-                                </div>
-    
-                                <!--botón de recordar-->
-    
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="remember" required>
-                                    <label class="form-check-label" for="remember">Recordar</label>
-                                </div>
-    
-                                <!--Botón de login dentro de un div -->
-    
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary">inicar sesión</button>
-                                </div>
-    
-                            </form>
-                        </div>
-                        <!-- Modal footer aquí puse lo de no tiene cuenta? y el id del main footer, que va abrir un modal
-                            a la hora de que el usuario le apriete a: Registrate aquí, lo cual le abrirá otro modal-->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">cerrar</button>
-                            <p class="mb-0">¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#sign_up">Regístrate aquí</a></p>
+<!-- Modal de Iniciar Sesión -->
+<div class="modal" id="log_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="login_modal">Iniciar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="registerForm">
+                    <!-- Campo de Correo -->
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="email" class="form-control" id="login_correo" placeholder="Ingresa tu correo" required>
                         </div>
                     </div>
-                </div>
-            </div>
-    
-            <!-- Modal de log-out, el cual la id la usaré donde declare el ícono de sign out
-                                                que en mi caso mi id es: log_out_modal -->
-            <div class="modal" id="log_out_modal">
-            <!-- El contenido del modal de log-out irá aquí -->
-    
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="log_out_modal">¿Deseas cerrar la sesión?</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <!-- Modal body aquí agrego el formulario-->
-    
-    
-    
-                        <div class="modal-body">
-                            <form>
-                                <!--Aquí puse los botones de si o no para el log-out
-                                usé las clases de d-flex y de justify-content-between
-                                para que esté el no a la izquierda y el sí a la derecha-->
-                                <div class="d-flex justify-content-between">
-    
-                                <button  type="submit" class="btn btn-primary" data-bs-dismiss="modal">no, prefiero seguir en sesión</button>
-                        
-    
-                                    <button id="confirm_logout" type="button" class="btn btn-danger">si, deseo salir de sesión</button>
-                                </div>
-    
-                            </form>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-    
-            <!--Aquí declararé el modal de regristro de usuarios-->
-            <div class="modal" id="sign_up">
-    
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="sign_up_modal"> Registrarse</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-    
-                        </div>
-    
-                        <!--uso de un container, de row y de col-6, basándome en el template de productos-->
-    
-    
-                        <div class="modal-body">
-                            <form>
-                                <div class="container">
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <input type="text" class="form-control" id="nombre" placeholder="Nombre(s)" required>
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="text" class="form-control" id="apellidos" placeholder="Apellidos" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <input type="email" class="form-control" id="correo" placeholder="Tu correo" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <input type="password" class="form-control" id="confirm_password" placeholder="Confirmar contraseña" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-    
-    
-                        <!--Aquí declaro el boton de registro, con ayuda de modal footer y dentro de modal content-->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">registrarse</button>
+                    <!-- Campo de Contraseña -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" required>
                         </div>
                     </div>
-                </div>
-    
-    
+                    <!-- Recordar Usuario -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Recordar</label>
+                    </div>
+                    <!-- Botón de Iniciar Sesión -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </div>
+                </form>
             </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <p class="mb-0">¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#sign_up">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cerrar Sesión -->
+<div class="modal" id="log_out_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="log_out_modal">¿Deseas cerrar la sesión?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body text-center">
+                <button type="button" class="btn btn-primary me-2" data-bs-dismiss="modal">No, seguir en sesión</button>
+                <button id="confirm_logout" type="button" class="btn btn-danger">Sí, salir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal de Registro -->
+    <div class="modal" id="sign_up">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sign_up_modal">Registrarse</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form>
+                        <div class="container">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="nombre" placeholder="Nombre(s)" required>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control" id="apellidos" placeholder="Apellidos" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="email" class="form-control" id="reg_correo" placeholder="Tu correo" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <input type="password" class="form-control" id="confirm_password" placeholder="Confirmar contraseña" required>
+                                </div>
+                            </div>
+                            <!-- Modal Footer -->
+                            <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Registrarse</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
     </head>
 
     <body>
