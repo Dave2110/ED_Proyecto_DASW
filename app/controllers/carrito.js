@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         sessionStorage.removeItem('carrito');
                         cargarCarrito();
                         actualizarTotalCarrito([]);
-                        window.location.href = '/confirmation.html';
+                        window.location.href = '../../Views/Index.html';
                     }
                 }
             } catch (error) {
