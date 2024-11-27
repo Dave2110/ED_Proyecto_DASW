@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('token');
+    const resumenCompra = document.getElementById('resumen_compra');
+    const loginToPay = document.getElementById('loginToPay');
 
     // Si no hay token, oculta el botón de "Logout"
     if (!token) {
@@ -7,10 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (logoutButton) {
             logoutButton.style.display = 'none';
         }
+        if (resumen_compra) resumenCompra.style.display = 'none';
+        if (loginToPay) loginToPay.style.display = '';
     }    
     if (token) {
         const loginButton = document.getElementById('login_button');
         if (loginButton) loginButton.style.display = 'none';
+        if (resumen_compra) resumenCompra.style.display = '';
+        if (loginToPay) loginToPay.style.display = 'none';
     }
 
     const logoutButton = document.getElementById("confirm_logout");

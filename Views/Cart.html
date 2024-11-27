@@ -67,6 +67,7 @@
 
         </style>
 
+
             <!-- Button to Open the Modal -->
         <!-- The Modal aquí agregué la id: log_modal que posteriormente uso donde declaré el ícono de usuario, para que me 
             abra el modal cuando se le da click -->
@@ -75,7 +76,7 @@
                     <div class="modal-content">
                         <!-- Modal Header aquí pongo el header y una id de login modal -->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="login_modal">Iniciar Sesión</h5>
+                            <h5 class="modal-title" id="#log_modal">Iniciar Sesión</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <!-- Modal body aquí agrego el formulario-->
@@ -261,10 +262,20 @@
                             </div>
                         </div>
                     </div>
+                </div> 
+
+                <!-- Contenedor que aparece cuando el usuario no está loggeado -->
+                <div class="col-lg-6 col-md-12" id="loginToPay">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Iniciar Sesión</h4>
+                            <p>Para hacer el pago, por favor <a href="#log_modal" data-bs-toggle="modal">inicia sesión</a>.</p>
+                        </div>
+                    </div>
                 </div>
-        
+                
                 <!-- Resumen de compra -->
-                <div class="col-lg-6 col-md-12">
+                <div id= "resumen_compra" class="col-lg-6 col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Resumen de Compra</h4>
@@ -304,7 +315,7 @@
         ></script>
 
         <script src= "../app/controllers/carrito.js"></script>
-
+        <script src="../app/controllers/auth.js"></script>
         <script src="https://js.stripe.com/v3/"></script>
 
         <div id="card-element">
