@@ -34,6 +34,8 @@ async function loadProducts() {
             `;
             tableBody.appendChild(row);
         });
+
+        
     } catch (error) {
         console.error("Error al cargar productos:", error);
         alert('Error al cargar productos. Verifica tu conexión.');
@@ -94,6 +96,11 @@ document.getElementById('createProductForm').addEventListener('submit', async (e
 
         document.getElementById('createProductForm').reset();
         loadProducts();
+        //función que hace posible que se vaya hasta abajo de la página cuando se agregue un producto
+        setTimeout(() => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 300);
+
         alert('¡Producto creado exitosamente!');
     } catch (error) {
         console.error("Error al crear producto:", error);
@@ -114,6 +121,11 @@ function showEditForm(uuid) {
     document.getElementById('editCategory').value = row.querySelector('.category').innerText;
     document.getElementById('editDescription').value = row.querySelector('.description').innerText;
     document.getElementById('editImageUrl').value = row.querySelector('.image').innerText;
+    
+ //manda al inicio de la página si se le da click al botón de editar
+    setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
 }
 
 // Actualizar producto
@@ -155,6 +167,11 @@ document.getElementById('editProductForm').addEventListener('submit', async (eve
         document.querySelector('.card:first-of-type').style.display = 'block';
         
         loadProducts();
+        //lo mismo pero para actualizar el producto 
+        setTimeout(() => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 300);
+
         alert('¡Producto actualizado exitosamente!');
     } catch (error) {
         console.error("Error al actualizar producto:", error);
@@ -182,8 +199,14 @@ async function deleteProduct(uuid) {
         if (!response.ok) {
             throw new Error('Error al eliminar producto: ' + response.statusText);
         }
-
+        
         loadProducts();
+
+        //cada vez que se elimina un producto se va al inicio de la página
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
+
         alert('Producto eliminado exitosamente');
     } catch (error) {
         console.error("Error al eliminar producto:", error);

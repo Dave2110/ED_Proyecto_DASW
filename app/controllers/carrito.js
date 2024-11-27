@@ -50,7 +50,8 @@ function createCartProductElement(producto) {
                                class="form-control d-inline-block w-auto" 
                                min="0" 
                                value="${producto.cantidad}" 
-                               onkeydown="actualizarCantidad(event, '${producto.uuid}')">
+                               onkeydown="actualizarCantidad(event, '${producto.uuid}')"
+                               oninput="actualizarCantidadInmediata(event, '${producto.uuid}')">
                     </p>
                     <p class="card-text"><strong>Precio:</strong> $${producto.price}</p>
                     <p class="card-text"><strong>Descripción:</strong> ${producto.description}</p>
@@ -154,7 +155,52 @@ function pagar() {
         });
 }
 
+function actualizarCantidadInmediata(event, productId) {
+    const inputValue = event.target.value;
+    const nuevaCantidad = parseInt(inputValue);
+    
+    const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
+    const index = carrito.findIndex(item => item.uuid === productId);
+    const valorAnterior = carrito[index]?.cantidad || 1;
 
+    // Verifico si es un número negativo
+    if (nuevaCantidad < 0) {
+        alert("No se permiten números negativos");
+        event.target.value = valorAnterior;
+        return;
+    }
+
+    // Verifico si el campo está vacío o es cero
+    if (inputValue === '' || nuevaCantidad === 0) {
+        const confirmar = confirm("¿Deseas eliminar este producto del carrito?");
+        
+        if (confirmar) {
+            // Si confirma, elimino el producto
+            if (index !== -1) {
+                carrito.splice(index, 1);
+                sessionStorage.setItem('carrito', JSON.stringify(carrito));
+                cargarCarrito();
+                actualizarTotalCarrito(carrito);
+            }
+        } else {
+            // Si no confirma, me encargo de restaurar el valor anterior
+            event.target.value = valorAnterior;
+            if (index !== -1) {
+                carrito[index].cantidad = valorAnterior;
+                sessionStorage.setItem('carrito', JSON.stringify(carrito));
+                actualizarTotalCarrito(carrito);
+            }
+        }
+        return;
+    }
+
+    // Para cualquier otro número válido, actualizar normalmente
+    if (index !== -1) {
+        carrito[index].cantidad = nuevaCantidad;
+        sessionStorage.setItem('carrito', JSON.stringify(carrito));
+        actualizarTotalCarrito(carrito);
+    }
+}
 // Función para actualizar la cantidad del producto cuando se presiona "Enter"
 function actualizarCantidad(event, productId) {
     if (event.key === 'Enter') {

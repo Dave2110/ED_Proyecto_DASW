@@ -88,6 +88,9 @@ document.getElementById('createProductForm').addEventListener('submit', async (e
 
         document.getElementById('createProductForm').reset();
         loadProducts();
+        setTimeout(() => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 300);
         alert('¡Producto creado con éxito!');
     } catch (error) {
         console.error("No pude crear el producto:", error);
